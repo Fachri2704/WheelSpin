@@ -29,11 +29,61 @@ const entriesPanel = document.querySelector('.entries-panel');
 const labelText = document.querySelector('.label-text');
 const sortBtn = document.getElementById("sortBtn");
 const defaultNames = ["Gabriel", "Rizky", "Amelia", "Budi", "Siti", "Andi", "Dewi", "Fajar"];
+const settingsPopup = document.getElementById('settingsPopup');
+const fixedWinnerToggle = document.getElementById('fixedWinnerToggle');
+const fixedWinnerArea = document.getElementById('fixedWinnerArea');
+const fixedWinnerList = document.getElementById('fixedWinnerList');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const logoH1 = document.querySelector('.logo-area h1');
+const spinSettingsPopup = document.getElementById('spinSettingsPopup');
+const spinTimeRange = document.getElementById('spinTimeRange');
+const spinTimeValue = document.getElementById('spinTimeValue');
+const openSpinSettings = document.getElementById('openSpinSettings');
+const closeSpinSettings = document.getElementById('closeSpinSettings');
 entriesInput.value = defaultNames.join("\n");
 // Set default (Panel terlihat di awal)
 panelToggle.checked = true;
 // 2. Aktifkan Idle Spin saat pertama kali load
 wheelContainer.classList.add('slow-spin');
+let spinDuration = 10;
+let isFixedMode = false;
+let currentWinnerStep = 0; // Untuk melacak urutan pemenang ke-berapa
+
+// 1. Klik dua kali logo untuk buka popup
+logoH1.addEventListener('dblclick', () => {
+  settingsPopup.classList.add('active');
+});
+
+// 2. Tutup popup
+closeSettingsBtn.addEventListener('click', () => {
+  settingsPopup.classList.remove('active');
+});
+
+// 3. Toggle ON/OFF
+fixedWinnerToggle.addEventListener('change', () => {
+  isFixedMode = fixedWinnerToggle.checked;
+  if (isFixedMode) {
+    fixedWinnerArea.classList.remove('hidden');
+    currentWinnerStep = 0; // Reset urutan saat diaktifkan
+  } else {
+    fixedWinnerArea.classList.add('hidden');
+  }
+});
+
+// Buka/Tutup Popup
+openSpinSettings.addEventListener('click', () => {
+  spinSettingsPopup.classList.add('active');
+});
+
+closeSpinSettings.addEventListener('click', () => {
+  spinSettingsPopup.classList.remove('active');
+});
+
+// Update nilai saat slider digeser
+spinTimeRange.addEventListener('input', (e) => {
+  spinDuration = parseInt(e.target.value);
+  spinTimeValue.innerText = spinDuration;
+});
 
 panelToggle.addEventListener('change', () => {
   if (panelToggle.checked) {
@@ -122,11 +172,26 @@ saveEditBtn.addEventListener('click', () => {
       let currentRotation = 0;
 
       function setCanvasSize() {
-        const size = wheelContainer.offsetWidth;
-        canvas.width = size;
-        canvas.height = size;
-      }
+  const section = document.querySelector('.wheel-section');
+  const availableWidth = section.offsetWidth;
+  const availableHeight = section.offsetHeight;
 
+  // Di mobile, kita lebih mengutamakan lebar (Width) karena kita bisa scroll ke bawah
+  // Di desktop, kita tetap menggunakan Math.min (lebar vs tinggi) agar tidak overflow
+  let size;
+  if (window.innerWidth <= 768) {
+    size = availableWidth - 40; // Margin 40px
+  } else {
+    size = Math.min(availableWidth, availableHeight) - 60;
+  }
+
+  canvas.width = size;
+  canvas.height = size;
+  
+  const wrapper = document.querySelector('.wheel-wrapper');
+  wrapper.style.width = size + 'px';
+  wrapper.style.height = size + 'px';
+}
       function getEntries() {
         const text = entriesInput.value.trim();
         if (!text) return [];
@@ -199,49 +264,84 @@ saveEditBtn.addEventListener('click', () => {
         });
       }
 
-      function spinWheel() {
+  function spinWheel() {
   if (isSpinning || entries.length === 0) return;
 
-  // MATIKAN IDLE SPIN SEBELUM MULAI
+  // 1. MATIKAN IDLE SPIN SEBELUM MULAI
   wheelContainer.classList.remove('slow-spin');
   
-  // Reset posisi ke 0 sebentar agar transisi JS tidak bentrok dengan sisa posisi CSS Animation
-  // Ini mencegah roda "melompat" saat diklik
+  // 2. Reset posisi ke 0 agar tidak bentrok
   wheelContainer.style.transition = 'none';
   wheelContainer.style.transform = 'rotate(0deg)';
   currentRotation = 0;
 
-  // Beri jeda sedikit (10ms) agar browser sadar animasi idle sudah mati
+  // Beri jeda sedikit agar browser sadar animasi idle sudah mati
   setTimeout(() => {
     isSpinning = true;
     
-    const spinDuration = 4000; 
-    const minSpins = 12; 
+    // 3. GUNAKAN DURASI DARI SLIDER (Konversi detik ke milidetik)
+    // Variabel spinDuration diambil dari input range settings
+    const currentSpinTimeMs = spinDuration * 1000; 
     
-    const randomWinnerIndex = Math.floor(Math.random() * entries.length);
+    // MinSpins otomatis menyesuaikan: semakin lama waktu, semakin banyak putaran
+    const minSpins = Math.max(5, Math.floor(spinDuration * 1.5)); 
+    
+    let randomWinnerIndex;
     const segmentAngle = 360 / entries.length;
+
+    // 4. LOGIKA PENENTU PEMENANG (Fixed vs Random)
+    if (typeof isFixedMode !== 'undefined' && isFixedMode) {
+      const listPemenang = fixedWinnerList.value.split('\n').filter(name => name.trim() !== "");
+      
+      if (listPemenang.length > 0) {
+        // Ambil nama berdasarkan urutan (looping)
+        const targetName = listPemenang[currentWinnerStep % listPemenang.length].trim();
+        
+        // Cari indexnya di roda
+        const foundIndex = entries.findIndex(name => name.toLowerCase() === targetName.toLowerCase());
+        
+        if (foundIndex !== -1) {
+          randomWinnerIndex = foundIndex;
+          currentWinnerStep++; 
+        } else {
+          randomWinnerIndex = Math.floor(Math.random() * entries.length);
+        }
+      } else {
+        randomWinnerIndex = Math.floor(Math.random() * entries.length);
+      }
+    } else {
+      randomWinnerIndex = Math.floor(Math.random() * entries.length);
+    }
     
-    // Posisi random agar deg-degan
-    const padding = segmentAngle * 0.05; 
+    // 5. KALKULASI POSISI BERHENTI
+    // Tambahkan sedikit offset random agar tidak selalu berhenti tepat di garis tengah segmen
+    const padding = segmentAngle * 0.1; 
     const randomOffsetInsideSegment = padding + (Math.random() * (segmentAngle - 2 * padding));
     
     const winnerRandomAngle = (randomWinnerIndex * segmentAngle) + randomOffsetInsideSegment;
     const targetStopAngle = 360 - winnerRandomAngle;
 
+    // Hitung rotasi kumulatif
     const currentFullRotations = Math.ceil(currentRotation / 360);
     currentRotation = (currentFullRotations + minSpins) * 360 + targetStopAngle;
 
-    // Jalankan Animasi Kencang
-    wheelContainer.style.transition = `transform ${spinDuration}ms cubic-bezier(0.1, 0, 0, 1)`;
+    // 6. JALANKAN ANIMASI (Durasinya Dinamis!)
+    wheelContainer.style.transition = `transform ${currentSpinTimeMs}ms cubic-bezier(0.1, 0, 0, 1)`;
     wheelContainer.style.transform = `rotate(${currentRotation}deg)`;
 
+    // 7. TAMPILKAN PEMENANG SETELAH DURASI SELESAI
     setTimeout(() => {
       isSpinning = false;
       const winner = entries[randomWinnerIndex];
       const winnerColor = colors[randomWinnerIndex % colors.length];
-      showWinner(winner, winnerColor);
-    }, spinDuration);
-  }, 10); // Jeda kecil
+      
+      if (typeof showWinner === 'function') {
+        showWinner(winner, winnerColor);
+      } else {
+        alert("Pemenangnya adalah: " + winner);
+      }
+    }, currentSpinTimeMs);
+  }, 10); 
 }
 
 
@@ -333,6 +433,8 @@ saveEditBtn.addEventListener('click', () => {
       window.addEventListener("resize", () => {
   drawWheel();
 });
-      
+   window.addEventListener("load", () => {
+  drawWheel();
+});   
 
       updateEntryCount();

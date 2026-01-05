@@ -4,20 +4,21 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+html, body {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden; /* Menghilangkan scrollbar global */
+  display: flex;
+  flex-direction: column;
   background: whitesmoke;
-  min-height: 100vh;
-  overflow-x: hidden;
-  color: #333;
 }
 
 header {
+  flex-shrink: 0; /* Mencegah navbar menciut */
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  padding: 15px 40px;
+  padding: 10px 40px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-} 
+}
 
 .header-content {
   display: flex;
@@ -46,31 +47,114 @@ header {
   font-size: 14px;
 }
 
-.app-container {
+/* Style Tombol Navbar */
+.btn-nav-icon {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-nav-icon:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Style Popup Dark Theme */
+.popup-box.dark-theme {
+  background: #1a1a1a;
+  color: white;
+  border-radius: 24px;
+  padding: 30px;
+}
+
+.popup-box.dark-theme h2 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.popup-box.dark-theme .subtitle {
+  color: #888;
+  margin-bottom: 30px;
+}
+
+/* Range Slider Styling */
+.range-container {
+  margin: 20px 0;
+}
+
+.range-labels {
   display: flex;
-  justify-content: center; /* Menjaga roda tetap di tengah */
-  align-items: flex-start;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 40px;
-  gap: 40px;
-  overflow: hidden;
+  justify-content: space-between;
+  padding: 0 5px;
+  color: #555;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: #f1c40f; /* Warna kuning slider */
+}
+
+.current-value {
+  margin: 30px 0;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.current-value #spinTimeValue {
+  color: #f1c40f;
+}
+
+.current-value .unit {
+  font-size: 18px;
+  color: white;
+}
+
+.btn-yellow {
+  width: 100%;
+  background: #f1c40f;
+  color: black;
+  border: none;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.app-container {
+  flex: 1; /* Mengambil semua sisa ruang vertikal */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch; /* Memaksa anak elemen punya tinggi sama */
+  padding: 0 40px 20px 40px;
+  gap: 30px;
+  overflow: hidden; /* Mencegah container ini meluap */
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Posisi Info di Pojok Kiri Atas */
 /* Container Utama Roda + Info */
 .wheel-main-area {
   width: 100%;
+  height: 100%;
   display: flex;
-  justify-content: center; /* Roda tetap berada di tengah secara visual */
+  justify-content: center;
   align-items: center;
 }
 
 /* Styling Info Tema */
 .theme-hero {
-  padding: 40px 60px 20px 60px;
-  width: 100%;
-  color: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);;
+  flex-shrink: 0; /* Mencegah hero section menciut */
+  padding: 15px 60px 5px 60px;
+  color: #1e3c72; /* Perbaikan: Gunakan warna solid untuk teks */
 }
 
 .hero-content {
@@ -114,90 +198,61 @@ header {
 /* Responsif: Jika layar kecil, info pindah ke atas roda */
 /* --- RESPONSIVE HP --- */
 @media (max-width: 768px) {
-  .theme-hero {
-    padding: 30px 20px 10px 20px;
-    text-align: center;
+  /* 1. Aktifkan scroll pada body hanya di mobile */
+  html, body {
+    overflow-y: auto !important; 
+    height: auto !important;
+    min-height: 100vh;
   }
-  
-  .theme-header {
-    display: flex;
+
+  /* 2. Susun elemen secara vertikal (tumpuk) */
+  .app-container {
     flex-direction: column;
+    padding: 10px 15px 30px 15px; /* Tambah padding bawah agar tidak mepet dasar */
+    height: auto;
+    gap: 30px; /* Beri jarak antar elemen */
+  }
+
+  /* 3. Perbesar Area Roda */
+  .wheel-section {
+    width: 100%;
+    height: 450px; /* Tinggi area roda yang pas di HP */
+    flex: none;
+    display: flex;
+    justify-content: center;
     align-items: center;
   }
 
-  .theme-header h2 {
-    font-size: 28px;
-  }
-
   .wheel-wrapper {
-    /* Memastikan roda di tengah layar HP */
-    width: 85vw;
-    height: 85vw;
-    margin: 0 auto;
-  }
-}
-
-/* --- RESPONSIVE LOGIC --- */
-@media (max-width: 768px) {
-  /* 1. Reset Container agar benar-benar rata tengah */
-  .app-container {
-    flex-direction: column;
-    padding: 10px 0; /* Pastikan padding kiri-kanan 0 */
-    gap: 0;
-    margin: 0;
-    align-items: center; /* Paksa semua anak elemen ke tengah */
-    width: 100vw;
+    width: 90vw; /* Gunakan 90% lebar layar agar roda besar */
+    height: 90vw;
+    max-width: 420px; /* Batas maksimal agar tidak terlalu raksasa di tablet */
+    max-height: 420px;
   }
 
-  /* 2. Reset Wheel Section */
- .wheel-section {
-  flex: 1; /* Mengambil ruang fleksibel */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 0;
-}
-
-  /* 3. Pastikan Area Roda Mengambil Lebar Penuh */
-.wheel-main-area {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-  /* 4. Sesuaikan Ukuran Roda agar Proporsional */
-  .wheel-wrapper {
-    width: 80vw; /* Gunakan 80% lebar layar agar ada sisa ruang manis di kiri-kanan */
-    height: 80vw;
-    max-width: 320px;
-    max-height: 320px;
-    margin: 0 auto; /* Margin otomatis kiri-kanan untuk centering */
-  }
-
-  /* 5. Info Tema (Judul) Rata Tengah */
-  .theme-info {
-    text-align: center;
-    width: 100%;
-    padding: 0 20px;
-  }
-
-  .theme-header {
-    justify-content: center;
-  }
-
-  /* 6. Perbaikan Panel Entries agar tidak merusak layout saat di-hide */
+  /* 4. Buat Panel Entries jadi Lega */
   .entries-panel {
     width: 100% !important;
-    margin-left: 0 !important;
-    border-radius: 0;
-    margin-top: 20px;
+    height: auto !important;
+    min-height: 550px; /* Panel akan panjang ke bawah, tidak sempit lagi */
+    margin-right: 0 !important;
+    padding: 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1); /* Efek bayangan halus */
   }
 
-  .entries-panel.collapsed {
-    display: none; /* Pakai display none di HP agar benar-benar hilang dari kalkulasi center */
-    transform: none;
-    width: 0;
-    height: 0;
+  #entriesInput {
+    min-height: 300px !important; /* Area ketik yang luas */
+    font-size: 16px; /* Mencegah auto-zoom di iPhone saat ketik */
+  }
+
+  /* 5. Header & Hero Adjustment */
+  .theme-hero {
+    padding: 20px 15px;
+    text-align: center;
+  }
+
+  .theme-header h2 {
+    font-size: 32px;
   }
 }
 
@@ -251,12 +306,14 @@ header {
 }
 
 .wheel-section {
-  flex-grow: 1;
+  flex: 1; /* Mengambil ruang fleksibel di sisi kiri */
   display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Mengatur semua konten di dalamnya mulai dari kiri */
-  padding: 30px 40px;      /* Memberi ruang dari pinggir layar dan navbar */
-  transition: all 0.6s ease;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  min-width: 0; /* Pencegahan flex-shrink bug */
 }
 .wheel-wrapper {
   position: relative;
@@ -337,13 +394,15 @@ header {
 
 .entries-panel {
   width: 400px;
+  height: 100%; /* Mengikuti tinggi app-container */
   background: white;
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
-  padding: 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Susun tab, input, button ke bawah */
+  padding: 20px;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .entries-header {
@@ -370,15 +429,12 @@ header {
 }
 
 #entriesInput {
+  flex: 1; /* Textarea akan memanjang otomatis */
   width: 100%;
-  min-height: 380px;
-  border: 2px solid #ecf0f1;
-  border-radius: 8px;
-  padding: 15px;
-  font-size: 15px;
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.3s ease;
+  min-height: 0; /* Reset min-height lamamu */
+  resize: none; /* Matikan resize manual agar tidak merusak layout */
+  margin-top: 10px;
+  overflow-y: auto; /* Scroll hanya jika teks sangat banyak */
 }
 
 #entriesInput:focus {
@@ -426,8 +482,6 @@ header {
 .results-list {
   flex: 1;
   overflow-y: auto;
-  margin-top: 10px;
-  max-height: 400px;
 }
 
 .result-item {
@@ -475,6 +529,13 @@ header {
 .tab-btn.active span {
   background: #3498db;
   color: white;
+}
+
+.tab-content {
+  flex: 1; /* Membuat area konten mengambil sisa tinggi panel */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
 }
 
 .tab-content.hidden {
@@ -625,14 +686,12 @@ input:checked + .slider:before {
 }
 
 .entries-panel.collapsed {
-  transform: translateX(450px); /* Geser keluar layar */
-  margin-left: -350px; /* Tarik ruang agar wheel ketengah */
-  width: 0;         /* Ciutkan lebar jadi 0 */
-  margin: 0;        /* Hilangkan margin */
-  padding: 0;       /* Hilangkan padding */
-  opacity: 0;       /* Buat transparan */
+  transform: translateX(450px);
+  width: 0;
+  margin-right: -400px; /* Menarik sisa ruang agar roda ke tengah */
+  padding: 0;
+  opacity: 0;
   pointer-events: none;
-  overflow: hidden;
 }
 
 /* Responsif untuk 3 panel */

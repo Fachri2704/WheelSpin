@@ -9,19 +9,44 @@
   <body>
     <header>
   <div class="header-content">
-    <div class="logo-area">
-      <h1>NameSpin</h1>
-      <!-- <p>Ketik nama, lalu klik wheel</p> -->
-    </div>
+  <div class="logo-area">
+    <h1>NameSpin</h1>
+  </div>
+  
+  <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
+    <button id="openSpinSettings" class="btn-nav-icon" title="Spin Settings">
+      <i class="fas fa-stopwatch"></i> Settings
+    </button>
 
-    <div class="global-controls">
-      <label class="panel-switch">
-        <input type="checkbox" id="panelToggle" checked>
-        <span class="slider"></span>
-        <span class="label-text">Hide Panel</span>
-      </label>
+    <label class="panel-switch">
+      <input type="checkbox" id="panelToggle" checked>
+      <span class="slider"></span>
+      <span class="label-text">Hide Panel</span>
+    </label>
+  </div>
+</div>
+
+<div class="popup-overlay" id="spinSettingsPopup">
+  <div class="popup-box dark-theme">
+    <div class="popup-content">
+      <h2>Pengaturan Putaran</h2>
+      <p class="subtitle">Spin time (seconds)</p>
+      
+      <div class="range-container">
+        <div class="range-labels">
+          <span>1</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span>
+        </div>
+        <input type="range" id="spinTimeRange" min="1" max="60" value="10">
+      </div>
+
+      <div class="current-value">
+        <span id="spinTimeValue">10</span> <span class="unit">detik</span>
+      </div>
+
+      <button id="closeSpinSettings" class="btn-yellow">Tutup</button>
     </div>
   </div>
+</div>
 </header>
 
  <section class="theme-hero">
@@ -116,6 +141,38 @@
         </div>
       </div>
     </div>
+
+    <div class="popup-overlay" id="settingsPopup">
+  <div class="popup-box">
+    <div class="popup-header" style="background: #34495e;">
+      <h3>Secret Settings</h3>
+    </div>
+    <div class="popup-content">
+      <div class="setting-item" style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        <label class="panel-switch">
+          <input type="checkbox" id="fixedWinnerToggle">
+          <span class="slider"></span>
+          <span class="label-text">Fixed Winner Mode</span>
+        </label>
+      </div>
+      
+      <div id="fixedWinnerArea" class="hidden">
+        <p style="font-size: 14px; color: #666; margin-bottom: 10px; text-align: left;">
+          Tentukan urutan pemenang (Satu nama per baris):
+        </p>
+        <textarea id="fixedWinnerList" 
+          placeholder="Contoh:&#10;Budi&#10;Andi&#10;Siti" 
+          style="width: 100%; height: 120px; padding: 10px; border-radius: 8px; border: 2px solid #ecf0f1; resize: none; font-family: inherit;"></textarea>
+        <p style="font-size: 12px; color: #95a5a6; margin-top: 5px; text-align: left;">
+          *Jika nama tidak ada di daftar roda, pemenang akan kembali random.
+        </p>
+      </div>
+    </div>
+    <div class="popup-actions">
+      <button id="closeSettingsBtn" class="btn-close" style="width: 100%;">Close</button>
+    </div>
+  </div>
+</div>
 
     <script src="./js/script.js"></script>
   </body>
