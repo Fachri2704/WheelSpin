@@ -4,18 +4,34 @@
   box-sizing: border-box;
 }
 
+body {
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Gradien gelap: Hitam ke Biru Tua/Gelap sesuai referensi */
+  background: radial-gradient(circle at center, #1a2a44 0%, #0d1117 100%);
+  background-attachment: fixed; /* Agar gradien tidak ikut ter-scroll */
+  color: white;
+  min-height: 100vh;
+}
+
 html, body {
   height: 100vh;
   margin: 0;
   overflow: hidden; /* Menghilangkan scrollbar global */
   display: flex;
   flex-direction: column;
-  background: whitesmoke;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Gradien gelap: Hitam ke Biru Tua/Gelap sesuai referensi */
+  background: radial-gradient(circle at center, #1a2a44 0%, #170d0d 100%);
+  background-attachment: fixed; /* Agar gradien tidak ikut ter-scroll */
+  color: white;
+  min-height: 100vh;
 }
 
 header {
   flex-shrink: 0; /* Mencegah navbar menciut */
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background: #212121;
   padding: 10px 40px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
@@ -154,7 +170,7 @@ input[type=range] {
 .theme-hero {
   flex-shrink: 0; /* Mencegah hero section menciut */
   padding: 15px 60px 5px 60px;
-  color: #1e3c72; /* Perbaikan: Gunakan warna solid untuk teks */
+  color: white; /* Perbaikan: Gunakan warna solid untuk teks */
 }
 
 .hero-content {
@@ -191,8 +207,25 @@ input[type=range] {
 }
 
 .edit-btn-hero:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #f39c12;
+  color:#020617;
   transform: translateY(-2px);
+}
+
+/* --- Desktop Styles (Default) --- */
+.hamburger {
+  display: none; /* Sembunyi di desktop */
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hamburger .bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 2px;
 }
 
 /* Responsif: Jika layar kecil, info pindah ke atas roda */
@@ -203,6 +236,10 @@ input[type=range] {
     overflow-y: auto !important; 
     height: auto !important;
     min-height: 100vh;
+  }
+
+  .header-content h1{
+    font-size: 25px;
   }
 
   /* 2. Susun elemen secara vertikal (tumpuk) */
@@ -253,6 +290,46 @@ input[type=range] {
 
   .theme-header h2 {
     font-size: 32px;
+  }
+
+  .hamburger {
+    display: flex; /* Muncul di HP */
+    z-index: 1001;
+  }
+
+  .header-actions {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Sembunyi di luar layar kanan */
+    width: 250px;
+    height: 100vh;
+    background: #0a0e14;
+    flex-direction: column;
+    padding: 80px 20px;
+    gap: 25px;
+    transition: 0.4s ease-in-out;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+
+  .header-actions.active {
+    right: 0; /* Muncul saat class 'active' ditambah */
+  }
+
+  /* Animasi Hamburger jadi tanda Silang (X) */
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+  
+  .btn-nav-icon {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -395,7 +472,7 @@ input[type=range] {
 .entries-panel {
   width: 400px;
   height: 100%; /* Mengikuti tinggi app-container */
-  background: white;
+  background: #020617;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
@@ -435,6 +512,9 @@ input[type=range] {
   resize: none; /* Matikan resize manual agar tidak merusak layout */
   margin-top: 10px;
   overflow-y: auto; /* Scroll hanya jika teks sangat banyak */
+  background: #020617;
+  color: white;
+  border-radius: 12px;
 }
 
 #entriesInput:focus {
@@ -859,3 +939,6 @@ input:checked + .slider:before {
 .slow-spin {
   animation: idleRotation 20s linear infinite;
 }
+
+
+

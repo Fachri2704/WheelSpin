@@ -40,6 +40,9 @@ const spinTimeRange = document.getElementById('spinTimeRange');
 const spinTimeValue = document.getElementById('spinTimeValue');
 const openSpinSettings = document.getElementById('openSpinSettings');
 const closeSpinSettings = document.getElementById('closeSpinSettings');
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+
 entriesInput.value = defaultNames.join("\n");
 // Set default (Panel terlihat di awal)
 panelToggle.checked = true;
@@ -48,6 +51,7 @@ wheelContainer.classList.add('slow-spin');
 let spinDuration = 10;
 let isFixedMode = false;
 let currentWinnerStep = 0; // Untuk melacak urutan pemenang ke-berapa
+let lastTap = 0;
 
 // 1. Klik dua kali logo untuk buka popup
 logoH1.addEventListener('dblclick', () => {
@@ -69,6 +73,38 @@ fixedWinnerToggle.addEventListener('change', () => {
     fixedWinnerArea.classList.add('hidden');
   }
 });
+
+// Fungsi untuk membuka popup
+function openSecretSettings() {
+  settingsPopup.classList.add('active');
+}
+
+// 1. Deteksi Double Click (Untuk Desktop)
+logoH1.addEventListener('dblclick', openSecretSettings);
+
+// 2. Deteksi Double Tap (Untuk HP/Touch)
+logoH1.addEventListener('touchstart', function(e) {
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  
+  // Jika jarak antar ketukan kurang dari 300ms, anggap sebagai double tap
+  if (tapLength < 300 && tapLength > 0) {
+    openSecretSettings();
+    e.preventDefault(); // Mencegah zoom saat ngetap cepat
+  }
+  lastTap = currentTime;
+});
+// humburger menu
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('active');
+  navMenu.classList.toggle('active');
+});
+
+// Tutup menu otomatis jika salah satu link/tombol di klik (Opsional)
+document.querySelectorAll('.btn-nav-icon').forEach(n => n.addEventListener('click', () => {
+  hamburger.classList.remove('active');
+  navMenu.classList.remove('active');
+}));
 
 // Buka/Tutup Popup
 openSpinSettings.addEventListener('click', () => {
